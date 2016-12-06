@@ -18,49 +18,39 @@ class Indexer:
         self.docdict = {}
         return
 
-    def build_docid_dict(self, ret = False):
-        with open('task1_urls.txt') as f:
-            links = f.read().splitlines()
-        counter = 1
-        for link in links:
-            docid = link[30:]
-            docid = docid.translate(string.maketrans("", ""), string.punctuation)
-            self.docdict[docid] = counter
-            counter += 1
+    def build_docid_dict(self, ret=False):
+        cwd = os.getcwd()
+        cacm = os.path.join(cwd, 'cacm')
+        os.chdir(cacm)
+        for eachfile in glob.glob("*.html"):
+            docid = eachfile[5:-5]
+            self.docdict[eachfile] = docid
+
         if ret:
             return self.docdict
 
-    def build_n_gram_index(self, n):
+    def build_n_gram_index(self):
         self.build_docid_dict()
         inverted_index = {}
-        token_count = {}
-        cwd = os.getcwd()
-        parsed_corpus = os.path.join(cwd, 'parsed_corpus')
-        os.chdir(parsed_corpus)
-        for eachfile in glob.glob('*.txt'):
-            # print eachfile
+        # token_count = {}
+        for eachfile in glob.glob('*.html'):
+            print eachfile
             file_content = open(eachfile)
             content = file_content.read()
-            fname = eachfile[:len(eachfile) - 4]
             content_as_list = content.split()
-            if n != 1:
-                content_as_list = self.find_ngrams(content_as_list, n)
-            if n == 1:
-                token_count[fname] = len(content_as_list)
-            else:
-                token_count[fname] = 0
+            # token_count[fname] = len(content_as_list)
             word_count = dict(Counter(content_as_list))
             for token in content_as_list:
                 if token not in inverted_index:
                     temp = dict()
-                    temp[self.docdict[fname]] = word_count[token]
+                    temp[self.docdict[eachfile]] = word_count[token]
                     inverted_index[token] = temp
                 else:
                     temp = inverted_index[token]
-                    temp[self.docdict[fname]] = word_count[token]
+                    temp[self.docdict[eachfile]] = word_count[token]
                     inverted_index[token] = temp
 
-        return inverted_index
+        print inverted_index
 
     def create_tf_table(self, n, filesave=True, stopword_flag=False):
         inv_index = self.build_n_gram_index(n)
@@ -137,8 +127,9 @@ def hw3_tasks():
     # ind.build_parsed_corpus()
     # print ind.parse_page(s)
     # ind.save_docids()
-    ind.build_n_gram_index(1)
+    ind.build_n_gram_index()
 
+    # ind.build_docid_dict()
     # ####### Change this value to respective value to see unigram, bigram and trigram data
     # n = 3
     #
@@ -150,4 +141,4 @@ def hw3_tasks():
     # ind.stopwords()
     return
 
-# hw3_tasks()
+hw3_tasks()
