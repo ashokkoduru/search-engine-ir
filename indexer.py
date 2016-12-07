@@ -50,7 +50,7 @@ class Indexer:
                     temp[self.docdict[eachfile]] = word_count[token]
                     inverted_index[token] = temp
 
-        print inverted_index
+        return inverted_index, self.docdict
 
     def create_tf_table(self, n, filesave=True, stopword_flag=False):
         inv_index = self.build_n_gram_index(n)
@@ -141,4 +141,4 @@ def hw3_tasks():
     # ind.stopwords()
     return
 
-hw3_tasks()
+# hw3_tasks()
