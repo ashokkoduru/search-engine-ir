@@ -17,8 +17,9 @@ import re
 
 class Retriever:
 
-    def __init__(self):
-        index = self.build_index()
+    def __init__(self, need_index=True):
+        self.need_index = need_index
+        index = self.build_index(self.need_index)
         self.inverted_index = index[0]
         self.total_corpus = index[1]
         self.relevance_data = self.get_relevance_data()
@@ -70,7 +71,7 @@ class Retriever:
             final_content += eachword + ' '
         return final_content
 
-    def build_index(self):
+    def build_index(self, need_index):
         cwd = os.getcwd()
         clean_cacm = os.path.join(cwd, 'clean_cacm')
         os.chdir(clean_cacm)
@@ -81,6 +82,8 @@ class Retriever:
             content = open(eachfile).read()
             content_as_list = content.split()
             total_corpus[docid] = content_as_list
+            if not need_index:
+                continue
             word_count = dict(Counter(content_as_list))
             for token in content_as_list:
                 if token not in inverted_index:

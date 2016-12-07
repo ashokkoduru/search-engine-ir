@@ -3,7 +3,7 @@
 # Author : Ashok, Sravanthi and Frenia
 # Date   : 6th December 2016
 # Task   : IR Final Project
-
+from retriever import Retriever
 from collections import Counter
 import os
 import string
@@ -14,7 +14,7 @@ import math
 
 class QueryExpander:
 
-    def __init__(self, inverted_index='', total_corpus='', filename='dummy_bm25.txt', top_k=15, n = 10):
+    def __init__(self, inverted_index={}, total_corpus={}, filename='dummy_bm25.txt', top_k=15, n=10):
         self.inverted_index = inverted_index
         self.total_corpus = total_corpus
         self.results = self.read_result_file(filename)
@@ -28,7 +28,7 @@ class QueryExpander:
         data = [s.split() for s in data]
         for qid in data:
             results.setdefault(int(qid[0]), []).append(qid[1])
-        return results
+        print results
 
     def psuedo_relevance(self, query_id):
         docs = self.results[query_id]
@@ -37,8 +37,6 @@ class QueryExpander:
             content = self.total_corpus[eachdoc]
             word_count = dict(Counter(content))
             sorted_wc = sorted(word_count.items(), key=operator.itemgetter(1), reverse=True)
-
-
 
         return
 
@@ -51,7 +49,9 @@ class QueryExpander:
 
 
 def hw3_tasks():
-    qe = QueryExpander()
+    r = Retriever(need_index= False)
+
+    qe = QueryExpander(inverted_index=r.inverted_index, total_corpus=r.total_corpus)
     qe.read_result_file('dummy_bm25.txt')
     # This method builds the clean corpus from raw corpus
     # ind.build_parsed_corpus()
