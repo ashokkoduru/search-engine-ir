@@ -5,6 +5,7 @@ import glob
 from retriever import Retriever
 from collections import Counter
 # from RetrievalModel import BM25
+from FileAccess import FileAccess
 
 class Stopper:
 
@@ -15,6 +16,7 @@ class Stopper:
         cwd = os.getcwd()
         clean_cacm = os.path.join(cwd, 'clean_cacm')
         stopped_cacm = os.path.join(cwd, 'stopped_cacm')
+        fa = FileAccess()
 
         if not os.path.exists(clean_cacm):
             print "Clean corpus doesn't exist. It is created now. " \
@@ -24,7 +26,7 @@ class Stopper:
         if not os.path.exists(stopped_cacm):
             os.makedirs(stopped_cacm, 0755)
 
-        stop_words = self.get_stop_words()
+        stop_words = fa.get_stop_words()
         os.chdir(clean_cacm)
 
         for eachfile in glob.glob('*.html'):
@@ -38,18 +40,29 @@ class Stopper:
             clean_file.write(final_content)
             clean_file.close()
 
-    def get_stop_words(self):
-        with open('common_words') as f:
-            stop_words = f.read().splitlines()
-
-        return stop_words
-
     def build_stopped_inverted_index(self):
         r = Retriever()
         stopped_corpus = r.build_index(folder='stopped')
         stopped_inv_index = stopped_corpus[0]
         stopped_docs = stopped_corpus[1]
         return stopped_inv_index, stopped_docs
+
+    def get_stopped_queries(self, query_dict):
+        fa = FileAccess()
+        query_dict = query_dict
+        stop_words = fa.get_stop_words()
+        stopped_queries = {}
+        for each in query_dict:
+            query = query_dict[each]
+            query_list = query.split()
+            stopped_query = [x for x in query_list if x not in stop_words]
+            stopped_query = " ".join(stopped_query)
+            stopped_queries[each] = stopped_query
+
+        return stopped_queries
+
+
+
 
 
 class Stemmer:
@@ -76,7 +89,7 @@ class Stemmer:
                     break
             content = content[0:last+1]
 
-            doc_content = " ".join(content)
+            doc_content = content
             idd = str(idd)
             diff = 4 - len(idd)
             z = diff * '0'
@@ -91,7 +104,7 @@ class Stemmer:
         stemmed_data = self.stemmed_data
         for eachfile in stemmed_data:
             docid = eachfile
-            content_as_list = stemmed_data[eachfile].split()
+            content_as_list = stemmed_data[eachfile]
             word_count = dict(Counter(content_as_list))
             for token in content_as_list:
                 if token not in inverted_index:

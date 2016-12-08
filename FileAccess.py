@@ -54,3 +54,16 @@ class FileAccess:
             d = (each[2], each[4])
             scores.setdefault(int(each[0]), []).append(d)
         return scores
+
+    def get_stem_queries(self):
+        with open('cacm_stem.query.txt') as f:
+            data = f.read().splitlines()
+
+        stemmed_queries = {}
+        i = 1
+        for each in data:
+            stemmed_queries[i] = each
+            i += 1
+
+        return stemmed_queries
+

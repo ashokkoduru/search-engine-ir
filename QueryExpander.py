@@ -13,14 +13,14 @@ from FileAccess import FileAccess
 
 class QueryExpander:
 
-    def __init__(self, filename, top_k=15, n=25):
+    def __init__(self, filename, query_dict, top_k=15, n=25):
         r = Retriever()
         corpus = r.get_total_corpus()
         self.k = top_k
         self.n = n
         self.total_corpus = corpus
         fa = FileAccess()
-        self.query_dict = fa.read_queries()
+        self.query_dict = query_dict
         self.results = fa.read_result_file(filename=filename)
         return
 
