@@ -46,13 +46,26 @@ class QueryExpander:
             sorted_wc = sorted(query_terms.items(), key=operator.itemgetter(1), reverse=True)
         for key in sorted_wc[:10]:
             new_query_terms.append(key[0])
-        print new_query_terms
 
-        return 0
+
+        return new_query_terms
 
     def retrieve_top_k(self):
 
-        return
+        with open('cleaned_queries.txt') as f:
+            queries = f.read().splitlines()
+        queries = [s.split() for s in queries]
+        query_dict = {}
+        for q in queries:
+            query_dict[int(q[0])] = " ".join(q[1:])
+        print query_dict
+        for key in query_dict:
+            new_query_terms = self.psuedo_relevance(key)
+            terms = query_dict[key].split()
+            final_query=new_query_terms + terms
+            final_query = list(set(final_query))
+            print(final_query)
+
 
 
 
@@ -63,7 +76,8 @@ def hw3_tasks():
 
     qe = QueryExpander(inverted_index=r.inverted_index, total_corpus=r.total_corpus)
     #qe.read_result_file('dummy_bm25.txt')
-    qe.psuedo_relevance(1)
+    #qe.psuedo_relevance(1)
+    qe.retrieve_top_k()
     # This method builds the clean corpus from raw corpus
     # ind.build_parsed_corpus()
     # print ind.parse_page(s)
