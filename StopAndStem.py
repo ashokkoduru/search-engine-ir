@@ -1,8 +1,8 @@
 import os
 import glob
-# from retriever import Retriever
+from retriever import Retriever
 from collections import Counter
-from RetrievalModel import BM25
+# from RetrievalModel import BM25
 
 class Stopper:
 
@@ -42,11 +42,11 @@ class Stopper:
         return stop_words
 
     def build_stopped_inverted_index(self):
-        # r = Retriever()
-        # stopped_corpus = r.build_index(folder_name='stopped_cacm')
-        # stopped_inv_index = stopped_corpus[0]
-        # stopped_docs = stopped_corpus[1]
-        return
+        r = Retriever()
+        stopped_corpus = r.build_index(folder='stopped')
+        stopped_inv_index = stopped_corpus[0]
+        stopped_docs = stopped_corpus[1]
+        return stopped_inv_index, stopped_docs
 
 
 class Stemmer:
@@ -65,7 +65,15 @@ class Stemmer:
         for each in data:
             each_doc = each.split()
             idd = each_doc[0]
-            doc_content = " ".join(each_doc[1:])
+            content = each_doc[1:]
+            last = 0
+            for i, v in enumerate(reversed(content)):
+                if v == 'am' or v == 'pm':
+                    last = len(content) - i - 1
+                    break
+            content = content[0:last+1]
+
+            doc_content = " ".join(content)
             idd = str(idd)
             diff = 4 - len(idd)
             z = diff * '0'
@@ -99,8 +107,8 @@ class Stemmer:
 
 
 def task3():
-    # stop = Stopper()
+    stop = Stopper()
     stem = Stemmer()
-    # s.build_stopped_corpus()
-    stem.build_stemmed_data()
+    stop.build_stopped_inverted_index()
+    # stem.build_stemmed_data()
 task3()

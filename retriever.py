@@ -71,10 +71,13 @@ class Retriever:
             final_content += eachword + ' '
         return final_content
 
-    def build_index(self,need_index=True):
+    def build_index(self,need_index=True, folder = 'clean'):
         cwd = os.getcwd()
-        clean_cacm = os.path.join(cwd, 'clean_cacm')
-        os.chdir(clean_cacm)
+        if folder == 'clean':
+            fol = os.path.join(cwd, 'clean_cacm')
+        else:
+            fol = os.path.join(cwd, 'stopped_cacm')
+        os.chdir(fol)
         inverted_index = {}
         total_corpus = {}
         for eachfile in glob.glob('*.html'):
