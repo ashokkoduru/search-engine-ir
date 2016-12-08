@@ -99,8 +99,8 @@ class Stemmer:
 
 
 def task3():
-    # s = Stopper()
-    s = Stemmer()
+    # stop = Stopper()
+    stem = Stemmer()
     # s.build_stopped_corpus()
-    s.build_stemmed_data()
+    stem.build_stemmed_data()
 task3()
