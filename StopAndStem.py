@@ -26,6 +26,7 @@ class Stopper:
         os.chdir(clean_cacm)
 
         for eachfile in glob.glob('*.html'):
+            print eachfile
             content = open(eachfile).read()
             content = content.split()
             stopped_content = [x for x in content if x not in stop_words]
@@ -101,14 +102,3 @@ class Stemmer:
                     inverted_index[token] = temp
         stepped_inv_index = inverted_index
         return stepped_inv_index
-
-
-
-
-
-def task3():
-    stop = Stopper()
-    stem = Stemmer()
-    stop.build_stopped_inverted_index()
-    # stem.build_stemmed_data()
-task3()

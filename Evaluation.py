@@ -93,22 +93,3 @@ class Evaluation:
         pr_file.close()
 
         return
-
-
-
-def task2_phase2():
-    e = Evaluation()
-    # scores = e.read_file('task1_cosine.txt')
-    files = ['task1_tfidf.txt',
-             "task1_cosine.txt",
-             'task1_bm25.txt',
-             'task1_lucene.txt']
-    for f in files:
-        e.evaluate(f)
-
-
-task2_phase2()
-
-
-
-

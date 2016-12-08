@@ -23,6 +23,23 @@ class Retriever:
         corpus = self.build_index(req)
         return corpus
 
+    def get_total_corpus(self, folder='clean'):
+        cwd = os.getcwd()
+        if folder == 'clean':
+            fol = os.path.join(cwd, 'clean_cacm')
+        else:
+            fol = os.path.join(cwd, 'stopped_cacm')
+        os.chdir(fol)
+        total_corpus = {}
+        for eachfile in glob.glob('*.html'):
+            print eachfile
+            docid = eachfile[:-5]
+            content = open(eachfile).read()
+            content_as_list = content.split()
+            total_corpus[docid] = content_as_list
+        os.chdir('..')
+        return total_corpus
+
     def clean_corpus(self):
         cwd = os.getcwd()
         cacm = os.path.join(cwd, 'cacm')
@@ -181,12 +198,3 @@ class Retriever:
         for each in results:
             f.write('{} {} {} {} {} {}\n'.format(each[0], 'Q0', each[1], each[2], each[3], model))
         f.close()
-
-
-def hw4_tasks():
-    r = Retriever()
-    # r.clean_corpus()
-    r.run_task1()
-    return
-
-hw4_tasks()
