@@ -4,7 +4,6 @@
 # Date   : 16th Nov 2016
 # Task   : IR Assignment 4
 
-from indexer import Indexer
 from collections import Counter
 from bs4 import BeautifulSoup
 from RetrievalModel import TfIdf, CosineSimilarity, BM25
@@ -17,12 +16,12 @@ import re
 
 class Retriever:
 
-    def __init__(self, need_index=True):
-        self.need_index = need_index
-        index = self.build_index(self.need_index)
-        self.inverted_index = index[0]
-        self.total_corpus = index[1]
-        self.relevance_data = self.get_relevance_data()
+    def __init__(self):
+        return
+
+    def get_corpus(self, req):
+        corpus = self.build_index(req)
+        return corpus
 
     def clean_corpus(self):
         cwd = os.getcwd()
@@ -71,7 +70,7 @@ class Retriever:
             final_content += eachword + ' '
         return final_content
 
-    def build_index(self, need_index):
+    def build_index(self,need_index=True):
         cwd = os.getcwd()
         clean_cacm = os.path.join(cwd, 'clean_cacm')
         os.chdir(clean_cacm)
@@ -107,57 +106,82 @@ class Retriever:
         return relevance_data
 
     def read_queries(self):
-        with open("cacm.query") as content:
-            regex = re.compile(r'<DOCNO>\s+(.*?)\s+</DOCNO>(.*?)</DOC>', re.DOTALL)
-            queries = re.findall(regex, content.read().replace("\n", ' '))
+        with open("cleaned_queries.txt") as content:
+            queries = content.read().splitlines()
 
-        query_file = open('cacm_query.query', 'w')
-        for query in queries:
-            query_file.write('{} {}\n'.format(query[0], query[1][1:-1]))
-
-
-    def run_all_queries(self):
-        with open('cacm_query.query') as f:
-            queries = f.read().splitlines()
-
-        queries = [s.split() for s in queries]
         query_dict = {}
         for q in queries:
-            query_dict[int(q[0])] = " ".join(q[1:])
+            each = q.split()
+            query_id = int(each[0])
+            query = " ".join(each[1:])
+            query_dict[query_id] = query
+
+        return query_dict
+
+    def run_task1(self, notes = ''):
+        query_dict = self.read_queries()
+        corpus = self.get_corpus(True)
+        inverted_index = corpus[0]
+        total_corpus = corpus[1]
+
+        relevance_data = self.get_relevance_data()
+
+        self.run_all_queries(inverted_index=inverted_index,
+                             total_corpus=total_corpus,
+                             relevance_data=relevance_data,
+                             query_dict=query_dict,
+                             model="tfidf",
+                             task_id="1", notes=notes)
+
+        self.run_all_queries(inverted_index=inverted_index,
+                             total_corpus=total_corpus,
+                             relevance_data=relevance_data,
+                             query_dict=query_dict,
+                             model='cosine',
+                             task_id="1", notes=notes)
+
+        self.run_all_queries(inverted_index=inverted_index,
+                             total_corpus=total_corpus,
+                             relevance_data=relevance_data,
+                             query_dict=query_dict,
+                             model='bm25',
+                             task_id="1", notes=notes)
+
+    def run_all_queries(self, inverted_index, total_corpus, relevance_data,
+                        query_dict, model='bm25', task_id='', notes=''):
         results = []
-        bm = BM25(self.inverted_index, self.total_corpus, self.relevance_data)
-        tfidf = TfIdf(self.inverted_index, self.total_corpus)
-        cosine = CosineSimilarity(self.inverted_index, self.total_corpus)
-        for each_query in query_dict:
-            query = self.clean_content(query_dict[each_query], False)
-            # ranks = tfidf.get_tf_idf(query)
-            ranks = bm.calculate_bm25(query,each_query)
-            # ranks = cosine.get_cosine_similarity(query)
+
+        bm = BM25(inverted_index, total_corpus, relevance_data)
+        tf_idf = TfIdf(inverted_index, total_corpus)
+        cosine = CosineSimilarity(inverted_index, total_corpus)
+        for query_id in query_dict:
+            query = self.clean_content(query_dict[query_id], False)
+            if model == 'tfidf':
+                ranks = tf_idf.get_tf_idf(query)
+            elif model == 'cosine':
+                ranks = cosine.get_cosine_similarity(query)
+            else:
+                ranks = bm.calculate_bm25(query, query_id)
+
             sorted_results = sorted(ranks.items(), key=operator.itemgetter(1), reverse=True)
             sorted_results = sorted_results[:100]
+            rank = 1
             for each in sorted_results:
-                tup = (each_query, each[0], each[1])
+                tup = (query_id, each[0], rank, each[1], model)
                 results.append(tup)
+                rank += 1
 
-        f = open('dummy_bm25.txt', 'w')
+        result_file_name = 'task'+task_id+'_'+model+notes+'.txt'
+
+        f = open(result_file_name, 'w')
         for each in results:
-            f.write("{} {} {}\n".format(each[0], each[1], each[2]))
-
+            f.write('{} {} {} {} {} {}\n'.format(each[0], 'Q0', each[1], each[2], each[3], model))
         f.close()
 
 
 def hw4_tasks():
     r = Retriever()
-    # r.clean_corpus()
-    # print r.inverted_index['the']
-    # print r.total_corpus['CACM-0001']
-    # r.read_queries()
-    r.run_all_queries()
-    # r.get_relevance_data()
-    # r.build_inverted_index()
-    # r.run_query(query, query_id)
-    # r.modify_lucene_files()
-    # r.merge_files('Ranked_Docs')
+    r.run_task1()
     return
 
 hw4_tasks()

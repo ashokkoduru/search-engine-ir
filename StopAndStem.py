@@ -1,5 +1,9 @@
 import os
 import glob
+# from retriever import Retriever
+from collections import Counter
+from RetrievalModel import BM25
+
 class Stopper:
 
     def __init__(self):
@@ -32,13 +36,71 @@ class Stopper:
             clean_file.close()
 
     def get_stop_words(self):
-        with open('common_words.txt') as f:
+        with open('common_words') as f:
             stop_words = f.read().splitlines()
 
         return stop_words
 
-def task3():
-    s = Stopper()
-    s.build_stopped_corpus()
+    def build_stopped_inverted_index(self):
+        # r = Retriever()
+        # stopped_corpus = r.build_index(folder_name='stopped_cacm')
+        # stopped_inv_index = stopped_corpus[0]
+        # stopped_docs = stopped_corpus[1]
+        return
 
+
+class Stemmer:
+
+    def __init__(self):
+        self.stemmed_data = self.build_stemmed_data()
+        return
+
+    def build_stemmed_data(self):
+        with open('cacm_stem.txt') as f:
+            data = f.read()
+        data = data.split('#')
+        data = [s.replace('\n', ' ') for s in data]
+        data = data[1:]
+        stemmed_data = {}
+        for each in data:
+            each_doc = each.split()
+            idd = each_doc[0]
+            doc_content = " ".join(each_doc[1:])
+            idd = str(idd)
+            diff = 4 - len(idd)
+            z = diff * '0'
+            idd = z+idd
+            docid = 'CACM-'+idd
+            stemmed_data[docid] = doc_content
+
+        return stemmed_data
+
+    def build_stepped_index(self):
+        inverted_index = {}
+        stemmed_data = self.stemmed_data
+        for eachfile in stemmed_data:
+            docid = eachfile
+            content_as_list = stemmed_data[eachfile].split()
+            word_count = dict(Counter(content_as_list))
+            for token in content_as_list:
+                if token not in inverted_index:
+                    temp = dict()
+                    temp[docid] = word_count[token]
+                    inverted_index[token] = temp
+                else:
+                    temp = inverted_index[token]
+                    temp[docid] = word_count[token]
+                    inverted_index[token] = temp
+        stepped_inv_index = inverted_index
+        return stepped_inv_index
+
+
+
+
+
+def task3():
+    # s = Stopper()
+    s = Stemmer()
+    # s.build_stopped_corpus()
+    s.build_stemmed_data()
 task3()

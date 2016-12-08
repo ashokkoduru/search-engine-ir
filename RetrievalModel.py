@@ -1,6 +1,7 @@
 from collections import Counter
 import math
 
+
 class TfIdf:
 
     def __init__(self, inverted_index, total_corpus):
@@ -24,8 +25,6 @@ class TfIdf:
                 tf_idf_file += tf_term * idf_term
             tf_idf_scores[docid] = tf_idf_file
         return tf_idf_scores
-
-
 
 
 class CosineSimilarity:
@@ -82,6 +81,7 @@ class CosineSimilarity:
             similarity = sum_num/denominator
             cosine_similarity[docid] = similarity
         return cosine_similarity
+
 
 class BM25:
 
