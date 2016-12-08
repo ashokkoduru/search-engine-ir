@@ -51,6 +51,7 @@ class Retriever:
         ignore_list = ['!', '@', '#', '$', '^', '&', '*', '(', ')', '_', '+', '=', '{', '[', '}', ']', '|',
                        '\\', '"', "'", ';', '/', '<', '>', '?', '%']
         content = content.translate(None, ''.join(ignore_list))
+        content = content.replace(':', ' ')
         content = content.split()
         last = 0
         if not_query:
@@ -181,6 +182,7 @@ class Retriever:
 
 def hw4_tasks():
     r = Retriever()
+    # r.clean_corpus()
     r.run_task1()
     return
 
