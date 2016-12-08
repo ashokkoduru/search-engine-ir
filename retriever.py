@@ -71,7 +71,7 @@ class Retriever:
             final_content += eachword + ' '
         return final_content
 
-    def build_index(self,need_index=True, folder = 'clean'):
+    def build_index(self,need_index=True, folder='clean'):
         cwd = os.getcwd()
         if folder == 'clean':
             fol = os.path.join(cwd, 'clean_cacm')

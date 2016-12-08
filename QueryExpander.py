@@ -14,11 +14,13 @@ import math
 
 class QueryExpander:
 
-    def __init__(self, inverted_index={}, total_corpus={}, filename='dummy_bm25.txt', top_k=15, n=10):
-        self.inverted_index = inverted_index
-        self.total_corpus = total_corpus
-        self.results = self.read_result_file(filename)
+    def __init__(self, filename, top_k=15):
         self.k = top_k
+        r = Retriever()
+        corpus = r.get_corpus(req=False)
+        self.total_corpus = corpus[1]
+        self.query_dict = r.read_queries()
+        self.results = self.read_result_file(filename=filename)
         return
 
     def read_result_file(self, filename):
@@ -26,9 +28,21 @@ class QueryExpander:
         with open(filename) as f:
             data = f.read().splitlines()
         data = [s.split() for s in data]
-        for qid in data:
-            results.setdefault(int(qid[0]), []).append(qid[1])
+        for each in data:
+            results.setdefault(int(each[0]), []).append(each[2])
         return results
+
+    def psuedo_relevance_feedback(self, filename, query_id):
+        results = self.results[query_id]
+        query = self.query_dict[query_id]
+        # inv_index = corpus[0]
+        results = results[0:self.k]
+        whole_content = []
+        for eachdoc in results:
+            whole_content.extend(self.total_corpus[eachdoc])
+
+        word_count = dict(Counter(whole_content))
+
 
     def psuedo_relevance(self, query_id):
         query_terms={}
@@ -46,7 +60,6 @@ class QueryExpander:
             sorted_wc = sorted(query_terms.items(), key=operator.itemgetter(1), reverse=True)
         for key in sorted_wc[:10]:
             new_query_terms.append(key[0])
-
 
         return new_query_terms
 
@@ -72,12 +85,12 @@ class QueryExpander:
 
 
 def hw3_tasks():
-    r = Retriever(need_index= False)
+    r = Retriever()
 
-    qe = QueryExpander(inverted_index=r.inverted_index, total_corpus=r.total_corpus)
-    #qe.read_result_file('dummy_bm25.txt')
-    #qe.psuedo_relevance(1)
-    qe.retrieve_top_k()
+    # qe = QueryExpander(inverted_index=r.inverted_index, total_corpus=r.total_corpus)
+    # qe.read_result_file('dummy_bm25.txt')
+    # qe.psuedo_relevance(1)
+    # qe.retrieve_top_k()
     # This method builds the clean corpus from raw corpus
     # ind.build_parsed_corpus()
     # print ind.parse_page(s)
