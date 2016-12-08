@@ -1,34 +1,17 @@
-import os
+#! /usr/bin/env python
 
+import os
+from FileAccess import FileAccess
 
 class Evaluation:
 
     def __init__(self):
         return
 
-    def read_file(self, file_name):
-        with open(file_name) as f:
-            data = f.read().splitlines()
-
-        data = [s.split() for s in data]
-        scores = {}
-        for each in data:
-            d = (each[2], each[4])
-            scores.setdefault(int(each[0]), []).append(d)
-        return scores
-
-    def get_relevance_data(self):
-        relevance_data = {}
-        with open("cacm.rel") as content:
-            data = content.read().splitlines()
-        data = [s.split() for s in data]
-        for qid in data:
-            relevance_data.setdefault(int(qid[0]), []).append(qid[2])
-        return relevance_data
-
     def evaluate(self, file_name):
-        scores = self.read_file(file_name=file_name)
-        relevant_data = self.get_relevance_data()
+        fa = FileAccess
+        scores = fa.read_score_file(file_name=file_name)
+        relevant_data = fa.get_relevance_data()
         pr_results = []
         map_results = {}
         mrr = []

@@ -1,3 +1,5 @@
+#! /usr/bin/env python
+
 import os
 import glob
 from retriever import Retriever
@@ -84,7 +86,7 @@ class Stemmer:
 
         return stemmed_data
 
-    def build_stepped_index(self):
+    def build_stemmed_index(self):
         inverted_index = {}
         stemmed_data = self.stemmed_data
         for eachfile in stemmed_data:

@@ -10,8 +10,6 @@ from RetrievalModel import TfIdf, CosineSimilarity, BM25
 import os
 import glob
 import operator
-import math
-import re
 
 
 class Retriever:
@@ -117,61 +115,11 @@ class Retriever:
         os.chdir('..')
         return inverted_index, total_corpus
 
-    def get_relevance_data(self):
-        relevance_data = {}
-        with open("cacm.rel") as content:
-            data = content.read().splitlines()
-        data = [s.split() for s in data]
-        for qid in data:
-            relevance_data.setdefault(int(qid[0]), []).append(qid[2])
-        return relevance_data
-
-    def read_queries(self):
-        with open("cleaned_queries.txt") as content:
-            queries = content.read().splitlines()
-
-        query_dict = {}
-        for q in queries:
-            each = q.split()
-            query_id = int(each[0])
-            query = " ".join(each[1:])
-            query_dict[query_id] = query
-
-        return query_dict
-
-    def run_task1(self, notes = ''):
-        query_dict = self.read_queries()
-        corpus = self.get_corpus(True)
-        inverted_index = corpus[0]
-        total_corpus = corpus[1]
-
-        relevance_data = self.get_relevance_data()
-
-        self.run_all_queries(inverted_index=inverted_index,
-                             total_corpus=total_corpus,
-                             relevance_data=relevance_data,
-                             query_dict=query_dict,
-                             model="tfidf",
-                             task_id="1", notes=notes)
-
-        self.run_all_queries(inverted_index=inverted_index,
-                             total_corpus=total_corpus,
-                             relevance_data=relevance_data,
-                             query_dict=query_dict,
-                             model='cosine',
-                             task_id="1", notes=notes)
-
-        self.run_all_queries(inverted_index=inverted_index,
-                             total_corpus=total_corpus,
-                             relevance_data=relevance_data,
-                             query_dict=query_dict,
-                             model='bm25',
-                             task_id="1", notes=notes)
-
     def run_all_queries(self, inverted_index, total_corpus, relevance_data,
-                        query_dict, model='bm25', task_id='', notes=''):
-        results = []
+                        query_dict, model='bm25', task_id='', notes='', store_queries =''):
 
+
+        results = []
         bm = BM25(inverted_index, total_corpus, relevance_data)
         tf_idf = TfIdf(inverted_index, total_corpus)
         cosine = CosineSimilarity(inverted_index, total_corpus)
@@ -192,9 +140,21 @@ class Retriever:
                 results.append(tup)
                 rank += 1
 
-        result_file_name = 'task'+task_id+'_'+model+notes+'.txt'
+        result_file_name = 'task'+task_id+'_'+model+"_"+notes+'.txt'
 
-        f = open(result_file_name, 'w')
+        if task_id == '':
+            task_folder = os.getcwd()
+        else:
+            task_folder = os.path.join(os.getcwd(), 'task'+task_id)
+            if not os.path.exists(task_folder):
+                os.makedirs(task_folder, 0755)
+        if store_queries != '':
+            query_file_name = store_queries+"_queries.txt"
+            qf = open(os.path.join(task_folder, query_file_name), 'w')
+            for each in query_dict:
+                qf.write("{} {}\n".format(str(each), query_dict[each]))
+
+        f = open(os.path.join(task_folder, result_file_name), 'w')
         for each in results:
             f.write('{} {} {} {} {} {}\n'.format(each[0], 'Q0', each[1], each[2], each[3], model))
         f.close()
