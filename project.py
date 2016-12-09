@@ -6,7 +6,7 @@ from FileAccess import FileAccess
 from QueryExpander import QueryExpander
 from StopAndStem import Stemmer, Stopper
 from Evaluation import Evaluation
-import os
+import os, glob
 from os import walk
 
 models = ['tfidf', 'cosine', 'bm25']
@@ -36,7 +36,7 @@ def task2(model):
     total_corpus = corpus[1]
     relevance_data = fa.get_relevance_data()
     task1_folder = os.path.join(os.getcwd(), 'task1')
-    file_name = "task1_"+model+".txt"
+    file_name = "task1_"+model+"_.txt"
     result_file = task1_folder+'/'+file_name
     qe = QueryExpander(query_dict=query_dict, filename=result_file)
     expanded_queries = qe.get_expanded_queries()
@@ -77,27 +77,22 @@ def pahse2():
     return
 
 def evalaution(model):
-    r = walk(os.getcwd())
-    print r
-    return
     p_k = [5, 20]
-    # scores = e.read_file('task1_cosine.txt')
-    task1_folder = os.path.join(os.getcwd(), 'task1')
-    file_name = "task1_" + model + "_.txt"
-    result_file = task1_folder + '/' + file_name
-
-    total_files = {'task1_cosine':'ds'}
-
-
-    # for f in files:
+    fa = FileAccess()
+    relevance_data = fa.get_relevance_data()
+    base_dir = os.getcwd()
+    all_runs = os.path.join(os.getcwd(), 'all_runs')
+    os.chdir(all_runs)
     e = Evaluation()
-    e.evaluate(result_file, p_k)
-    # return
+
+    for eachfile in glob.glob('*.txt'):
+        e.evaluate(eachfile, p_k, base_dir, relevance_data)
+
 
 task1()
-# task2('cosine')
-# task3a('cosine')
-# task3b('cosine')
+task2('cosine')
+task3a('cosine')
+task3b('cosine')
 # evalaution('cosine')
 
 

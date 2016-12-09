@@ -162,7 +162,7 @@ class Retriever:
         f2 = open(os.path.join(all_runs, result_file_name), 'w')
         for each in results:
             f1.write('{} {} {} {} {} {}\n'.format(each[0], 'Q0', each[1], each[2], each[3], model))
-            f1.write('{} {} {} {} {} {}\n'.format(each[0], 'Q0', each[1], each[2], each[3], model))
+            f2.write('{} {} {} {} {} {}\n'.format(each[0], 'Q0', each[1], each[2], each[3], model))
         f1.close()
         f2.close()
 

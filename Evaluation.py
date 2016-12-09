@@ -8,10 +8,9 @@ class Evaluation:
     def __init__(self):
         return
 
-    def evaluate(self, file_name, rank_list):
+    def evaluate(self, file_name, rank_list, base_dir, relevant_data):
         fa = FileAccess()
         scores = fa.read_score_file(file_name)
-        relevant_data = fa.get_relevance_data()
         pr_results = []
         ap_results = []
         mrr = []
@@ -56,32 +55,29 @@ class Evaluation:
         mean_avg_pr = sum(ap_results)/len(relevant_data)
         mean_rr = sum(mrr)/len(relevant_data)
 
-        phase2_evaluation = os.path.join(os.getcwd(), 'evaluation_phase2')
-
-        pre = 'ashok'
+        phase2_evaluation = os.path.join(base_dir, 'evaluation_phase2')
 
         if not os.path.exists(phase2_evaluation):
             os.makedirs(phase2_evaluation, 0755)
 
+        pre_file = file_name.split('.')[0]
         for each in p_at_k:
-            pk_file_name = pre + '_p@k'+str(each)+'.txt'
+            pk_file_name = pre_file + '_p@k'+str(each)+'.txt'
             pk_file = open(os.path.join(phase2_evaluation, pk_file_name), 'w')
             for e in p_at_k[each]:
                 pk_file.write('{} {}\n'.format(e[0], e[1]))
             pk_file.close()
 
-        return
-        file_name = 'ashok'
-        mrr_filename = file_name + '_mrr.txt'
-        pr_filename = file_name + '_precision_recall.txt'
-        map_filename = file_name + '_map_results.txt'
+        mrr_filename = pre_file + '_mrr.txt'
+        pr_filename = pre_file + '_precision_recall.txt'
+        map_filename = pre_file + '_map_results.txt'
 
         mrr_file = open(os.path.join(phase2_evaluation, mrr_filename), 'w')
         mrr_file.write(str(mean_rr))
         mrr_file.close()
 
         map_file = open(os.path.join(phase2_evaluation, map_filename), 'w')
-        map_file.write('{} {}\n'.format(str(mean_avg_pr)))
+        map_file.write(str(mean_avg_pr))
         map_file.close()
 
         pr_file = open(os.path.join(phase2_evaluation, pr_filename), 'w')
