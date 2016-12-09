@@ -17,7 +17,7 @@ class Retriever:
     def __init__(self):
         return
 
-    def get_corpus(self, req):
+    def get_corpus(self, req=True):
         corpus = self.build_index(req)
         return corpus
 
@@ -67,6 +67,7 @@ class Retriever:
                        '\\', '"', "'", ';', '/', '<', '>', '?', '%']
         content = content.translate(None, ''.join(ignore_list))
         content = content.replace(':', ' ')
+        content = content.replace('-', ' ')
         content = content.split()
         last = 0
         if not_query:
@@ -116,7 +117,7 @@ class Retriever:
         return inverted_index, total_corpus
 
     def run_all_queries(self, inverted_index, total_corpus, relevance_data,
-                        query_dict, model='bm25', task_id='', notes='', store_queries =''):
+                        query_dict, model='bm25', task_id='', notes='', store_queries ='', ret=False):
 
 
         results = []
@@ -139,6 +140,8 @@ class Retriever:
                 tup = (query_id, each[0], rank, each[1], model)
                 results.append(tup)
                 rank += 1
+        if ret:
+            return results
 
         result_file_name = 'task'+task_id+'_'+model+"_"+notes+'.txt'
         if task_id == '':

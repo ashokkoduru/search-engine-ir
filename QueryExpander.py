@@ -13,12 +13,14 @@ from FileAccess import FileAccess
 
 class QueryExpander:
 
-    def __init__(self, filename, query_dict, top_k=15, n=25):
+    def __init__(self, filename, query_dict, top_k=15, n=25, clean = True):
         r = Retriever()
-        corpus = r.get_total_corpus()
+        if clean:
+            self.total_corpus = r.get_total_corpus(folder='stopped')
+        else:
+            self.total_corpus = r.get_total_corpus(folder='clean')
         self.k = top_k
         self.n = n
-        self.total_corpus = corpus
         fa = FileAccess()
         self.query_dict = query_dict
         self.results = fa.read_result_file(filename=filename)
