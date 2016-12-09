@@ -13,9 +13,9 @@ from FileAccess import FileAccess
 
 class QueryExpander:
 
-    def __init__(self, filename, query_dict, top_k=15, n=25, clean = True):
+    def __init__(self, filename, query_dict, top_k=12, n=5, clean = True):
         r = Retriever()
-        if clean:
+        if not clean:
             self.total_corpus = r.get_total_corpus(folder='stopped')
         else:
             self.total_corpus = r.get_total_corpus(folder='clean')
@@ -32,7 +32,7 @@ class QueryExpander:
         results = results[0:self.k]
         whole_content = []
         for eachdoc in results:
-            whole_content.extend(self.total_corpus[eachdoc])
+            whole_content += self.total_corpus[eachdoc]
 
         word_count = dict(Counter(whole_content))
         query_terms = query.split()
@@ -42,13 +42,10 @@ class QueryExpander:
                 word_count[eachterm] += self.k
             else:
                 word_count[eachterm] = self.k
-        weighted_words = sorted(word_count.items(), key=operator.itemgetter(1), reverse=True)
-        weighted_words = weighted_words[0:len(query_terms) + self.n]
-        extra_query = ''
-        for each in weighted_words:
-            extra_query += each[0]+' '
-        final_query = query + ' ' + extra_query
-        return final_query
+        weighted_terms = sorted(word_count.items(), key=operator.itemgetter(1), reverse=True)
+
+        final_query = [i for i, j in weighted_terms][:len(query_terms) + self.n]
+        return " ".join(final_query)
 
     def get_expanded_queries(self):
         query_dict = self.query_dict

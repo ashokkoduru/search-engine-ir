@@ -92,12 +92,25 @@ def phase2(model):
                       query_dict=expanded_stopped_queries, model=model, task_id="phase2", notes="stopped_expanded", store_queries='stopped_expanded')
 
 
-def evalaution(model):
+def evalaution():
     p_k = [5, 20]
     fa = FileAccess()
     relevance_data = fa.get_relevance_data()
     base_dir = os.getcwd()
     all_runs = os.path.join(os.getcwd(), 'all_runs')
+    os.chdir(all_runs)
+    e = Evaluation()
+
+    for eachfile in glob.glob('*.txt'):
+        e.evaluate(eachfile, p_k, base_dir, relevance_data)
+
+def evalaution_excel():
+    p_k = [5, 20]
+    fa = FileAccess()
+    relevance_data = fa.get_relevance_data()
+    base_dir = os.getcwd()
+    all_runs = os.path.join(os.getcwd(), 'all_runs')
+    all
     os.chdir(all_runs)
     e = Evaluation()
 
@@ -134,12 +147,12 @@ def snippet_generation(query):
         print '\n'
 
 
-# task1()
-# task2('cosine')
-# task3a('cosine')
-# task3b('cosine')
-# phase2('cosine')
-evalaution('cosine')
+task1()
+task2('cosine')
+task3a('cosine')
+task3b('cosine')
+phase2('cosine')
+evalaution()
 # snippet_generation('portable system')
 
 
