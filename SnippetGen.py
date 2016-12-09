@@ -1,5 +1,5 @@
 #! /usr/bin/env python
-
+from FileAccess import FileAccess
 from stemming.porter2 import stem
 import string
 
@@ -7,6 +7,7 @@ import string
 class SnippetGenerator:
 
     def __init__(self):
+        self.max = 150
         return
 
     def split_doc_to_tokens(self, doc):
@@ -37,30 +38,32 @@ class SnippetGenerator:
 
     def add_from_surround(self, doc_tokens, query_tokens):
         doc = self.build_doc_from_tokens(doc_tokens, False)
-        if len(doc) < 200:
+        if len(doc) < self.max:
             return [doc]
         surround_tokens = []
         keyword_sp = []
-        query_token = query_tokens[0]
         for query_token in query_tokens:
-            for doc_token in doc_tokens:
-                if query_token['stemmed'] == doc_token['stemmed']:
-                    keyword_sp.append((doc_token['op'], doc_token['original']))
+                for doc_token in doc_tokens:
+                    if query_token['stemmed'] == doc_token['stemmed']:
+                        keyword_sp.append((doc_token['op'], doc_token['original']))
 
         if keyword_sp == []:
             return [doc[200:]]
 
         for i in range(len(keyword_sp)):
-            surround_tokens.append(self.extract_surround(doc, keyword_sp[i][0], True, True))
-            surround_tokens.append(self.extract_surround(doc, keyword_sp[i][0] + 200 / 2, False, True))
-            surround_tokens.append(self.extract_surround(doc, keyword_sp[i][0] + len(keyword_sp[i][1]) - 200 / 2,
+            surround_tokens.append(self.extract_surround(doc,
+                                                         keyword_sp[i][0], True, True))
+            surround_tokens.append(self.extract_surround(doc,
+                                                         keyword_sp[i][0] + self.max / 2, False, True))
+            surround_tokens.append(self.extract_surround(doc,
+                                                         keyword_sp[i][0] + len(keyword_sp[i][1]) - self.max / 2,
                                                          True, False))
 
         return surround_tokens
 
     def extract_surround(self, doc, index, flag_left, flag_right):
-        left = max(index - 200 / 2, 0)
-        right = min(index + 200 / 2, len(doc))
+        left = max(index - self.max/2, 0)
+        right = min(index + self.max/2, len(doc))
         if right == len(doc):
             flag_right = False
         if left == 0:
@@ -68,21 +71,21 @@ class SnippetGenerator:
 
         left_pf = False
         if flag_left and doc[left - 1].isalnum() and doc[left].isalnum():
-            i = left
-            while doc[i] != ' ':
-                i += 1
-            if i - left >= 4:
+            count = left
+            while doc[count] != ' ':
+                count += 1
+            if count - left >= 4:
                 left_pf = True
-            left = i
+            left = count
 
         right_pf = False
         if flag_right and doc[right].isalnum() and doc[right - 1].isalnum():
-            j = right
-            while doc[j] != ' ':
-                j -= 1
-            if right - j >= 4:
+            count = right
+            while doc[count] != ' ':
+                count -= 1
+            if right - count >= 4:
                 right_pf = True
-            right = j
+            right = count
 
         surround = (doc[left:right]).strip()
         if left_pf:
@@ -116,8 +119,8 @@ class SnippetGenerator:
         snippet = ''
         query_tokenized = self.build_doc_from_tokens(query_tokens)
         for surround_token in best_surround_tokens:
-            if surround_token['stemmed'] in query_tokenized.split():
-
+            spl = query_tokenized.split()
+            if surround_token['stemmed'] in spl or surround_token['original'] in spl:
                 snippet = ' '.join([snippet, '"'])
                 snippet = ''.join([snippet, surround_token['original']])
                 snippet = ''.join([snippet, '"'])
@@ -126,26 +129,14 @@ class SnippetGenerator:
         return snippet.replace('" "', ' ').strip()
 
     def generate_snippet(self, doc, query):
-        sg = SnippetGenerator()
         doc_tokens = self.split_doc_to_tokens(doc.lower())
-        query_tokens = self.split_doc_to_tokens(query)
-        fragments = self.add_from_surround(doc_tokens, query_tokens)
-        best_surround_tokens = self.calculate_snippet_score(fragments, doc_tokens, query_tokens)
-        return sg.put_quotes(best_surround_tokens, query_tokens)
-
-
-def dummy():
-    sg = SnippetGenerator()
-    doc = ''
-    query = ''
-    doc_tokens = sg.split_doc_to_tokens(doc)
-    query_tokens = sg.split_doc_to_tokens(query)
-    fragments = sg.add_from_surround(doc_tokens, query_tokens)
-    list_of_best_fragment_tokens = sg.calculate_snippet_score(fragments, doc_tokens, query_tokens)
-
-    # 4. We format the most relevant fragment and return it
-    print sg.put_quotes(list_of_best_fragment_tokens, query_tokens)
-
-dummy()
-
+        fa = FileAccess()
+        stop_words = fa.get_stop_words()
+        query = query.split()
+        stopped_content = [x for x in query if x not in stop_words]
+        final_query = " ".join(stopped_content)
+        query_tokens = self.split_doc_to_tokens(final_query)
+        surrounds = self.add_from_surround(doc_tokens, query_tokens)
+        best_surround_tokens = self.calculate_snippet_score(surrounds, doc_tokens, query_tokens)
+        return self.put_quotes(best_surround_tokens, query_tokens)
 

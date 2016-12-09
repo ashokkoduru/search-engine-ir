@@ -39,7 +39,6 @@ class FileAccess:
         return results
 
     def get_stop_words(self):
-        print os.getcwd()
         with open('common_words') as f:
             stop_words = f.read().splitlines()
 

@@ -117,10 +117,3 @@ class Stemmer:
                     inverted_index[token] = temp
         stepped_inv_index = inverted_index
         return stepped_inv_index
-
-
-def random():
-    r = Stopper()
-    r.build_stopped_corpus()
-
-# random()

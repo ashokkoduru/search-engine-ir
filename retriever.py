@@ -30,7 +30,6 @@ class Retriever:
         os.chdir(fol)
         total_corpus = {}
         for eachfile in glob.glob('*.html'):
-            print eachfile
             docid = eachfile[:-5]
             content = open(eachfile).read()
             content_as_list = content.split()
@@ -168,9 +167,3 @@ class Retriever:
             f2.write('{} {} {} {} {} {}\n'.format(each[0], 'Q0', each[1], each[2], each[3], model))
         f1.close()
         f2.close()
-
-def random():
-    r = Retriever()
-    r.clean_corpus()
-
-# random()

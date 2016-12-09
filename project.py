@@ -104,23 +104,14 @@ def evalaution():
     for eachfile in glob.glob('*.txt'):
         e.evaluate(eachfile, p_k, base_dir, relevance_data)
 
-def evalaution_excel():
-    p_k = [5, 20]
-    fa = FileAccess()
-    relevance_data = fa.get_relevance_data()
-    base_dir = os.getcwd()
-    all_runs = os.path.join(os.getcwd(), 'all_runs')
-    all
-    os.chdir(all_runs)
-    e = Evaluation()
 
-    for eachfile in glob.glob('*.txt'):
-        e.evaluate(eachfile, p_k, base_dir, relevance_data)
-
-def snippet_generation(query):
+def snippet_generation():
     r = Retriever()
-    query_dict = dict()
-    query_dict[1] = query
+    fa = FileAccess()
+    query_dict = fa.read_queries()
+    query_id = raw_input('Enter the query_id: \n')
+    query = query_dict[int(query_id)]
+    print 'Query: '+ query
     fa = FileAccess()
     relevance_data = fa.get_relevance_data()
     corpus = r.get_corpus(True)
@@ -141,18 +132,35 @@ def snippet_generation(query):
         snippet = sg.generate_snippet(data, query)
         snippet_dictionary[docid] = snippet
 
-    for each in snippet_dictionary:
-        print each
-        print snippet_dictionary[each]
+    for each in results:
+        print each[1]
+        print snippet_dictionary[each[1]]
         print '\n'
 
 
-task1()
-task2('cosine')
-task3a('cosine')
-task3b('cosine')
-phase2('cosine')
-evalaution()
-# snippet_generation('portable system')
+# uncomment the particular method that needs to be run
 
+# change this to bm25 or tfidf if required
+model = 'cosine'
+
+# Task 1 : It runs the 3 models and creates the folder task1
+task1()
+
+# Task 2 : It runs the cosine model on expanded queries and creates the folder task2
+task2(model)
+
+# Task 3a: It runs the cosine model on stopped queries and stopped corpus
+task3a(model)
+
+# Task 3b: It runs the cosine model on stemmed queries and stemmed corpus
+task3b(model)
+
+# Task phase2: It runs the cosine model on stemmed queries and stemmed corpus
+phase2(model)
+
+# Evaluation : It takes all the runs present in all_runs folder and do the evaluation on them
+evalaution()
+
+# Snippet: prompts a query id and generates relevant snippetes
+# snippet_generation()
 
