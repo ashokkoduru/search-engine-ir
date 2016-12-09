@@ -135,10 +135,10 @@ def snippet_generation(query):
 
 
 # task1()
-task2('cosine')
-task3a('cosine')
-task3b('cosine')
-phase2('cosine')
+# task2('cosine')
+# task3a('cosine')
+# task3b('cosine')
+# phase2('cosine')
 evalaution('cosine')
 # snippet_generation('portable system')
 

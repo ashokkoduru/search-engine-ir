@@ -52,8 +52,8 @@ class Evaluation:
                 avg_p = 0
             ap_results.append(avg_p)
 
-        mean_avg_pr = sum(ap_results)/len(relevant_data)
-        mean_rr = sum(mrr)/len(relevant_data)
+        mean_avg_pr = sum(ap_results)/len(ap_results)
+        mean_rr = sum(mrr)/len(mrr)
 
         phase2_evaluation = os.path.join(base_dir, 'evaluation_phase2')
 
