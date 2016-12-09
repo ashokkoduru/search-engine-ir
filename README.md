@@ -45,7 +45,7 @@ Also, added a hashmap function for retrieving doc_id from the index file created
 
 HOW TO RUN THE PROGRAM:
 
-Run the Java code on Netbeans/Ecilpse. 
+Run the Java code on Netbeans/Eclipse. 
 
 --------------------------------------------------------------------------------------------------------------
 
@@ -59,6 +59,8 @@ FORMAT OF THE FILES:
 The precision and recall files contain three extra columns apart from the TREC format namely 'relevance', 'precision' and 'recall'
 The MAP and MRR files are a single value average over 64 queries
 The P@K is the value at K=5 and K=20 for each query
+
+* We have attached the excel files in the documentation PDF, in case they don’t open please refer to the .docx file attached.
 
 
 

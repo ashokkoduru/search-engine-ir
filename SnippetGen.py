@@ -1,8 +1,6 @@
 #! /usr/bin/env python
 from FileAccess import FileAccess
-from stemming.porter2 import stem
-from collections import Counter
-import string
+
 
 class SnippetGenerator:
 
@@ -16,7 +14,6 @@ class SnippetGenerator:
         fa = FileAccess()
         stop_words = fa.get_stop_words()
         query = query.split()
-        stopped_content = [x for x in query if x not in stop_words]
         stopped_content = query
         final_query = " ".join(stopped_content)
 

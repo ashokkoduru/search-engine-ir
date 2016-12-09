@@ -1,8 +1,6 @@
 #! /usr/bin/env python
 
-# Author : Ashok Koduru
-# Date   : 16th Nov 2016
-# Task   : IR Assignment 4
+
 
 from collections import Counter
 from bs4 import BeautifulSoup

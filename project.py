@@ -146,7 +146,7 @@ def snippet_generation():
 model = 'cosine'
 
 # Task 1 : It runs the 3 models and creates the folder task1
-# task1()
+task1()
 
 # Task 2 : It runs the cosine model on expanded queries and creates the folder task2
 # task2(model)
@@ -164,7 +164,7 @@ model = 'cosine'
 # evalaution()
 
 # Snippet: prompts a query id and generates relevant snippetes
-snippet_generation()
+# snippet_generation()
 
 
 
