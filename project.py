@@ -89,10 +89,10 @@ def evalaution(model):
         e.evaluate(eachfile, p_k, base_dir, relevance_data)
 
 
-task1()
-task2('cosine')
-task3a('cosine')
-task3b('cosine')
-# evalaution('cosine')
+# task1()
+# task2('cosine')
+# task3a('cosine')
+# task3b('cosine')
+evalaution('cosine')
 
 
