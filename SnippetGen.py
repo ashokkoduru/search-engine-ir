@@ -3,7 +3,6 @@ from FileAccess import FileAccess
 from stemming.porter2 import stem
 import string
 
-
 class SnippetGenerator:
 
     def __init__(self):
@@ -61,6 +60,19 @@ class SnippetGenerator:
 
         return surround_tokens
 
+    def put_quotes(self, best_surround_tokens, query_tokens):
+        snippet = ''
+        query_tokenized = self.build_doc_from_tokens(query_tokens)
+        for surround_token in best_surround_tokens:
+            spl = query_tokenized.split()
+            if surround_token['stemmed'] in spl or surround_token['original'] in spl:
+                snippet = ' '.join([snippet, '"'])
+                snippet = ''.join([snippet, surround_token['original']])
+                snippet = ''.join([snippet, '"'])
+            else:
+                snippet = ' '.join([snippet, surround_token['original']])
+        return snippet.replace('" "', ' ').strip()
+
     def extract_surround(self, doc, index, flag_left, flag_right):
         left = max(index - self.max/2, 0)
         right = min(index + self.max/2, len(doc))
@@ -114,19 +126,6 @@ class SnippetGenerator:
                 best_surround_tokens = surround_token_list
 
         return best_surround_tokens
-
-    def put_quotes(self, best_surround_tokens, query_tokens):
-        snippet = ''
-        query_tokenized = self.build_doc_from_tokens(query_tokens)
-        for surround_token in best_surround_tokens:
-            spl = query_tokenized.split()
-            if surround_token['stemmed'] in spl or surround_token['original'] in spl:
-                snippet = ' '.join([snippet, '"'])
-                snippet = ''.join([snippet, surround_token['original']])
-                snippet = ''.join([snippet, '"'])
-            else:
-                snippet = ' '.join([snippet, surround_token['original']])
-        return snippet.replace('" "', ' ').strip()
 
     def generate_snippet(self, doc, query):
         doc_tokens = self.split_doc_to_tokens(doc.lower())

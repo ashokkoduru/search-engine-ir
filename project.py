@@ -2,13 +2,11 @@
 
 from retriever import Retriever
 from SnippetGen import SnippetGenerator
-from RetrievalModel import TfIdf, CosineSimilarity, BM25
 from FileAccess import FileAccess
 from QueryExpander import QueryExpander
 from StopAndStem import Stemmer, Stopper
 from Evaluation import Evaluation
 import os, glob
-from os import walk
 
 models = ['tfidf', 'cosine', 'bm25']
 
@@ -110,7 +108,10 @@ def snippet_generation():
     fa = FileAccess()
     query_dict = fa.read_queries()
     query_id = raw_input('Enter the query_id: \n')
-    query = query_dict[int(query_id)]
+    if int(query_id) > 64 or int(query_id) < 1:
+        print 'No Query exists, please enter between 1 to 64'
+        return
+    query = query_dict[int(query_id)-1]
     print 'Query: '+ query
     fa = FileAccess()
     relevance_data = fa.get_relevance_data()
@@ -144,23 +145,25 @@ def snippet_generation():
 model = 'cosine'
 
 # Task 1 : It runs the 3 models and creates the folder task1
-task1()
+# task1()
 
 # Task 2 : It runs the cosine model on expanded queries and creates the folder task2
-task2(model)
+# task2(model)
 
 # Task 3a: It runs the cosine model on stopped queries and stopped corpus
-task3a(model)
+# task3a(model)
 
 # Task 3b: It runs the cosine model on stemmed queries and stemmed corpus
-task3b(model)
+# task3b(model)
 
 # Task phase2: It runs the cosine model on stemmed queries and stemmed corpus
-phase2(model)
+# phase2(model)
 
 # Evaluation : It takes all the runs present in all_runs folder and do the evaluation on them
-evalaution()
+# evalaution()
 
 # Snippet: prompts a query id and generates relevant snippetes
-# snippet_generation()
+snippet_generation()
+
+
 

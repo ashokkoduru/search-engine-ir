@@ -1,8 +1,5 @@
 #! /usr/bin/env python
 
-import glob
-import os
-
 class FileAccess:
     def __init__(self):
         return
@@ -19,7 +16,6 @@ class FileAccess:
     def read_queries(self):
         with open("cleaned_queries.txt") as content:
             queries = content.read().splitlines()
-
         query_dict = {}
         for q in queries:
             each = q.split()
