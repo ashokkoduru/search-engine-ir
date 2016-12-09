@@ -71,7 +71,7 @@ class Retriever:
         last = 0
         if not_query:
             for i, v in enumerate(reversed(content)):
-                if v == 'AM' or v == 'PM':
+                if 'AM' in v or 'PM' in v:
                     last = len(content) - i - 1
                     break
             content = content[0:last+1]
@@ -141,20 +141,33 @@ class Retriever:
                 rank += 1
 
         result_file_name = 'task'+task_id+'_'+model+"_"+notes+'.txt'
-
         if task_id == '':
             task_folder = os.getcwd()
         else:
             task_folder = os.path.join(os.getcwd(), 'task'+task_id)
             if not os.path.exists(task_folder):
                 os.makedirs(task_folder, 0755)
+
+        all_runs = os.path.join(os.getcwd(), 'all_runs')
+        if not os.path.exists(all_runs):
+            os.makedirs(all_runs, 0755)
+
         if store_queries != '':
             query_file_name = store_queries+"_queries.txt"
             qf = open(os.path.join(task_folder, query_file_name), 'w')
             for each in query_dict:
                 qf.write("{} {}\n".format(str(each), query_dict[each]))
 
-        f = open(os.path.join(task_folder, result_file_name), 'w')
+        f1 = open(os.path.join(task_folder, result_file_name), 'w')
+        f2 = open(os.path.join(all_runs, result_file_name), 'w')
         for each in results:
-            f.write('{} {} {} {} {} {}\n'.format(each[0], 'Q0', each[1], each[2], each[3], model))
-        f.close()
+            f1.write('{} {} {} {} {} {}\n'.format(each[0], 'Q0', each[1], each[2], each[3], model))
+            f1.write('{} {} {} {} {} {}\n'.format(each[0], 'Q0', each[1], each[2], each[3], model))
+        f1.close()
+        f2.close()
+
+def random():
+    r = Retriever()
+    r.clean_corpus()
+
+# random()

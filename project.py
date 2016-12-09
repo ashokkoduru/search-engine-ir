@@ -7,6 +7,7 @@ from QueryExpander import QueryExpander
 from StopAndStem import Stemmer, Stopper
 from Evaluation import Evaluation
 import os
+from os import walk
 
 models = ['tfidf', 'cosine', 'bm25']
 
@@ -75,20 +76,28 @@ def pahse2():
 
     return
 
-def evalaution():
-    e = Evaluation()
-    # scores = e.read_file('task1_cosine.txt')
-    files = ['task1_tfidf.txt',
-             "task1_cosine.txt",
-             'task1_bm25.txt',
-             'task1_lucene.txt']
-    for f in files:
-        e.evaluate(f)
+def evalaution(model):
+    r = walk(os.getcwd())
+    print r
     return
+    p_k = [5, 20]
+    # scores = e.read_file('task1_cosine.txt')
+    task1_folder = os.path.join(os.getcwd(), 'task1')
+    file_name = "task1_" + model + "_.txt"
+    result_file = task1_folder + '/' + file_name
 
-# task1()
+    total_files = {'task1_cosine':'ds'}
+
+
+    # for f in files:
+    e = Evaluation()
+    e.evaluate(result_file, p_k)
+    # return
+
+task1()
 # task2('cosine')
 # task3a('cosine')
-task3b('cosine')
+# task3b('cosine')
+# evalaution('cosine')
 
 

@@ -84,7 +84,7 @@ class Stemmer:
             content = each_doc[1:]
             last = 0
             for i, v in enumerate(reversed(content)):
-                if v == 'am' or v == 'pm':
+                if 'am' in v or 'pm' in v:
                     last = len(content) - i - 1
                     break
             content = content[0:last+1]
@@ -117,3 +117,10 @@ class Stemmer:
                     inverted_index[token] = temp
         stepped_inv_index = inverted_index
         return stepped_inv_index
+
+
+def random():
+    r = Stopper()
+    r.build_stopped_corpus()
+
+# random()

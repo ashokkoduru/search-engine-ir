@@ -8,16 +8,18 @@ class Evaluation:
     def __init__(self):
         return
 
-    def evaluate(self, file_name):
-        fa = FileAccess
-        scores = fa.read_score_file(file_name=file_name)
+    def evaluate(self, file_name, rank_list):
+        fa = FileAccess()
+        scores = fa.read_score_file(file_name)
         relevant_data = fa.get_relevance_data()
         pr_results = []
-        map_results = {}
+        ap_results = []
         mrr = []
-        total_r = 0
+        p_at_k = {}
+        for each in rank_list:
+            p_at_k[each] = []
         for each in scores:
-            map = 0
+            ap = 0
             if each in relevant_data:
                 relevant_files = relevant_data[each]
             else:
@@ -33,31 +35,44 @@ class Evaluation:
                 if docid in relevant_files:
                     if total_relevant_retrieved == 0:
                         mrr.append(1.0/rank)
-                        total_r += 1
                     total_relevant_retrieved += 1
                 relevance = 1 if docid in relevant_files else 0
                 precision = float(total_relevant_retrieved)/total_retrieved
+                if rank in rank_list:
+                    tup = (qid, precision)
+                    p_at_k[rank].append(tup)
                 if relevance:
-                    map += precision
+                    ap += precision
                 recall = float(total_relevant_retrieved)/len(relevant_files)
                 total_retrieved += 1
                 tup = (qid, rank, docid, doc_score, str(relevance), precision, recall)
                 pr_results.append(tup)
             if total_relevant_retrieved != 0:
-                mean_avg_p = float(map)/total_relevant_retrieved
+                avg_p = float(ap)/total_relevant_retrieved
             else:
-                mean_avg_p = 0
-            map_results[each] = mean_avg_p
-        if total_r != 0:
-            mean_rr = sum(mrr)/total_r
-        else:
-            mean_rr = 'Does not exist'
+                avg_p = 0
+            ap_results.append(avg_p)
+
+        mean_avg_pr = sum(ap_results)/len(relevant_data)
+        mean_rr = sum(mrr)/len(relevant_data)
+
         phase2_evaluation = os.path.join(os.getcwd(), 'evaluation_phase2')
+
+        pre = 'ashok'
 
         if not os.path.exists(phase2_evaluation):
             os.makedirs(phase2_evaluation, 0755)
 
-        mrr_filename = file_name+ '_mrr.txt'
+        for each in p_at_k:
+            pk_file_name = pre + '_p@k'+str(each)+'.txt'
+            pk_file = open(os.path.join(phase2_evaluation, pk_file_name), 'w')
+            for e in p_at_k[each]:
+                pk_file.write('{} {}\n'.format(e[0], e[1]))
+            pk_file.close()
+
+        return
+        file_name = 'ashok'
+        mrr_filename = file_name + '_mrr.txt'
         pr_filename = file_name + '_precision_recall.txt'
         map_filename = file_name + '_map_results.txt'
 
@@ -66,8 +81,7 @@ class Evaluation:
         mrr_file.close()
 
         map_file = open(os.path.join(phase2_evaluation, map_filename), 'w')
-        for each in map_results:
-            map_file.write('{} {}\n'.format(str(each), str(map_results[each])))
+        map_file.write('{} {}\n'.format(str(mean_avg_pr)))
         map_file.close()
 
         pr_file = open(os.path.join(phase2_evaluation, pr_filename), 'w')
