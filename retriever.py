@@ -167,3 +167,4 @@ class Retriever:
             f2.write('{} {} {} {} {} {}\n'.format(each[0], 'Q0', each[1], each[2], each[3], model))
         f1.close()
         f2.close()
+

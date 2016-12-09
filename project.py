@@ -122,7 +122,7 @@ def snippet_generation():
     results = r.run_all_queries(inverted_index=inverted_index, total_corpus=total_corpus, relevance_data=relevance_data,
                                 query_dict=query_dict, model='cosine', task_id="1", notes='', ret=True)
 
-    results = results[0:10]
+    results = results[0:4]
     snippet_dictionary = {}
 
     for each in results:
@@ -133,8 +133,9 @@ def snippet_generation():
         snippet = sg.generate_snippet(data, query)
         snippet_dictionary[docid] = snippet
 
+    print '\n'
     for each in results:
-        print each[1]
+        print 'Doc-Id: '+ each[1]
         print snippet_dictionary[each[1]]
         print '\n'
 
